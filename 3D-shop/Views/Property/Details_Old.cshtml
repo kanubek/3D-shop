@@ -1,0 +1,235 @@
+@model Property
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="property-detail-header">
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="/">Главная</a> / <a href="/Property">Недвижимость</a> / @Model.Title
+        </nav>
+        <h1>@Model.Title</h1>
+        <div class="property-meta">
+            <span class="property-type">@Model.PropertyType</span>
+            <span class="property-status">@Model.Status</span>
+            @if (Model.Is3DGenerated)
+            {
+                <span class="badge badge-3d">🎯 3D модель готова</span>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="property-detail-content">
+    <div class="container">
+        <div class="property-layout">
+            <div class="property-main">
+                
+                <!-- 3D Модель или галерея изображений -->
+                <div class="media-section">
+                    @if (Model.Is3DGenerated && !string.IsNullOrEmpty(Model.Model3DUrl))
+                    {
+                        <div class="model-3d-container">
+                            <div class="model-3d-viewer" id="model3d">
+                                <div class="model-placeholder">
+                                    <h3>🎮 3D Модель</h3>
+                                    <p>Интерактивная 3D модель сгенерированная ИИ</p>
+                                    <button class="btn btn-primary" onclick="load3DModel('@Model.Model3DUrl')">
+                                        🚀 Загрузить 3D модель
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="model-controls">
+                                <button class="btn btn-outline" onclick="resetCamera()">🔄 Сбросить вид</button>
+                                <button class="btn btn-outline" onclick="toggleFullscreen()">🖥️ Полный экран</button>
+                                <button class="btn btn-outline" onclick="takeScreenshot()">📸 Скриншот</button>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="image-gallery">
+                            @if (Model.Images.Any())
+                            {
+                                foreach (var image in Model.Images.OrderBy(i => i.Order))
+                                {
+                                    <img src="@image.ImageUrl" alt="@Model.Title" class="@(image.IsPrimary ? "primary-image" : "")" />
+                                }
+                            }
+                            else
+                            {
+                                <div class="no-images">
+                                    <p>📷 Изображения загружаются...</p>
+                                </div>
+                            }
+                            
+                            @if (!Model.Is3DGenerated)
+                            {
+                                <div class="ai-generation">
+                                    <h4>🤖 Генерация 3D модели</h4>
+                                    <p>ИИ анализирует загруженные изображения и создает 3D модель</p>
+                                    <button class="btn btn-primary" onclick="generate3D(@Model.Id)">
+                                        🚀 Запустить генерацию 3D
+                                    </button>
+                                    <div class="generation-progress" id="progress" style="display: none;">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill"></div>
+                                        </div>
+                                        <p>Генерация 3D модели... Осталось примерно 2 минуты</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <!-- Описание -->
+                <div class="description-section">
+                    <h2>📋 Описание</h2>
+                    <p>@Model.Description</p>
+                </div>
+
+                <!-- Характеристики -->
+                <div class="specs-section">
+                    <h2>📊 Характеристики</h2>
+                    <div class="specs-grid">
+                        <div class="spec-item">
+                            <span class="spec-label">Площадь:</span>
+                            <span class="spec-value">@Model.Area м²</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Комнаты:</span>
+                            <span class="spec-value">@Model.Rooms</span>
+                        </div>
+                        @if (Model.Floor > 0)
+                        {
+                            <div class="spec-item">
+                                <span class="spec-label">Этаж:</span>
+                                <span class="spec-value">@Model.Floor из @Model.TotalFloors</span>
+                            </div>
+                        }
+                        <div class="spec-item">
+                            <span class="spec-label">Тип:</span>
+                            <span class="spec-value">@Model.PropertyType</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Добавлено:</span>
+                            <span class="spec-value">@Model.CreatedAt.ToString("dd.MM.yyyy")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="property-sidebar">
+                <!-- Цена и контакты -->
+                <div class="price-section">
+                    <div class="price">@Model.Price.ToString("C0", new System.Globalization.CultureInfo("ru-RU"))</div>
+                    <div class="price-per-meter">@((Model.Price / (decimal)Model.Area).ToString("C0", new System.Globalization.CultureInfo("ru-RU"))) за м²</div>
+                </div>
+
+                <div class="contact-section">
+                    <h3>📞 Контакты</h3>
+                    <div class="contact-info">
+                        <p><strong>Телефон:</strong> @Model.ContactInfo</p>
+                        <p><strong>Адрес:</strong> @Model.Address</p>
+                    </div>
+                    <div class="contact-actions">
+                        <button class="btn btn-primary btn-full" onclick="showContactForm()">
+                            📞 Связаться с продавцом
+                        </button>
+                        <button class="btn btn-outline btn-full" onclick="addToFavorites(@Model.Id)">
+                            ❤️ В избранное
+                        </button>
+                        <button class="btn btn-outline btn-full" onclick="shareProperty(@Model.Id)">
+                            📤 Поделиться
+                        </button>
+                    </div>
+                </div>
+
+                @if (Model.Is3DGenerated)
+                {
+                    <div class="ai-info">
+                        <h4>🤖 ИИ анализ</h4>
+                        <div class="ai-features">
+                            <div class="ai-feature">
+                                <span class="ai-icon">✅</span>
+                                <span>3D модель готова</span>
+                            </div>
+                            <div class="ai-feature">
+                                <span class="ai-icon">🎯</span>
+                                <span>Высокая точность</span>
+                            </div>
+                            <div class="ai-feature">
+                                <span class="ai-icon">⚡</span>
+                                <span>Быстрая генерация</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function load3DModel(modelUrl) {
+            const container = document.getElementById('model3d');
+            container.innerHTML = '<div class="loading-3d"><h3>🚀 Загрузка 3D модели...</h3><p>Это может занять несколько секунд</p></div>';
+            
+            // Здесь будет код загрузки 3D модели через Three.js или другой движок
+            setTimeout(() => {
+                container.innerHTML = `
+                    <div class="model-loaded">
+                        <h3>🎮 3D Модель загружена!</h3>
+                        <p>Используйте мышь для вращения и зум</p>
+                        <div class="fake-3d-viewer">
+                            <div class="model-cube">🏠</div>
+                        </div>
+                    </div>
+                `;
+            }, 2000);
+        }
+        
+        function generate3D(propertyId) {
+            if (confirm('Запустить ИИ генерацию 3D модели? Процесс займет 2-3 минуты.')) {
+                document.getElementById('progress').style.display = 'block';
+                
+                // Симуляция процесса генерации
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 2;
+                    document.querySelector('.progress-fill').style.width = progress + '%';
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        alert('🎉 3D модель успешно сгенерирована! Страница будет перезагружена.');
+                        location.reload();
+                    }
+                }, 1000);
+            }
+        }
+        
+        function showContactForm() {
+            alert('Здесь откроется форма связи с продавцом');
+        }
+        
+        function addToFavorites(propertyId) {
+            alert('Объект добавлен в избранное!');
+        }
+        
+        function shareProperty(propertyId) {
+            if (navigator.share) {
+                navigator.share({
+                    title: '@Model.Title',
+                    text: '@Model.Description',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback
+                navigator.clipboard.writeText(window.location.href);
+                alert('Ссылка скопирована в буфер обмена!');
+            }
+        }
+    </script>
+}

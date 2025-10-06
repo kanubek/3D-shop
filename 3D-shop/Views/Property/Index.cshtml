@@ -1,0 +1,143 @@
+@model PropertyViewModel
+@{
+    ViewData["Title"] = "Недвижимость в Кыргызстане";
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1>🏘️ Недвижимость в Кыргызстане</h1>
+        <p>Найдено объектов: @Model.TotalProperties</p>
+    </div>
+</div>
+
+<div class="search-section">
+    <div class="container">
+        <form method="get" class="search-form">
+            <div class="search-row">
+                <div class="search-field">
+                    <input type="text" name="search" value="@Model.SearchQuery" placeholder="Поиск по названию или адресу..." />
+                </div>
+                <div class="search-field">
+                    <select name="type">
+                        <option value="">Тип недвижимости</option>
+                        <option value="Квартира" selected="@(Model.PropertyType == "Квартира")">Квартира</option>
+                        <option value="Дом" selected="@(Model.PropertyType == "Дом")">Дом</option>
+                        <option value="Коттедж" selected="@(Model.PropertyType == "Коттедж")">Коттедж</option>
+                    </select>
+                </div>
+                <div class="search-field">
+                    <input type="number" name="minPrice" value="@(Model.MinPrice > 0 ? Model.MinPrice : "")" placeholder="Цена от (сом)" />
+                </div>
+                <div class="search-field">
+                    <input type="number" name="maxPrice" value="@(Model.MaxPrice > 0 ? Model.MaxPrice : "")" placeholder="Цена до (сом)" />
+                </div>
+                <button type="submit" class="btn btn-primary">🔍 Найти</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="properties-section">
+    <div class="container">
+        @if (Model.Properties.Any())
+        {
+            <div class="properties-grid">
+                @foreach (var property in Model.Properties)
+                {
+                    <div class="property-card">
+                        @{
+                            var primaryImage = property.Images.FirstOrDefault(i => i.IsPrimary) ?? property.Images.FirstOrDefault();
+                        }
+                        @if (primaryImage != null)
+                        {
+                            <div class="property-image">
+                                <img src="@primaryImage.ImageUrl" alt="@property.Title" />
+                                <div class="property-badges-overlay">
+                                    @if (property.Is3DGenerated)
+                                    {
+                                        <span class="badge badge-3d">🎯 3D</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-processing">⏳</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        <div class="property-header">
+                            <h3>@property.Title</h3>
+                            <div class="property-badges">
+                                <span class="badge badge-type">@property.PropertyType</span>
+                            </div>
+                        </div>
+                        
+                        <div class="property-info">
+                            <div class="property-price">💰 @RealEstate3D.Helpers.CurrencyHelper.FormatKyrgyzCurrencyShort(property.Price)</div>
+                            <div class="property-details">
+                                <span>📐 @property.Area м²</span>
+                                <span>🚪 @property.Rooms комн.</span>
+                                @if (property.Floor > 0)
+                                {
+                                    <span>🏢 @property.Floor/@property.TotalFloors эт.</span>
+                                }
+                            </div>
+                            <div class="property-address">📍 @property.Address</div>
+                        </div>
+                        
+                        <div class="property-description">
+                            <p>@property.Description</p>
+                        </div>
+                        
+                        <div class="property-actions">
+                            <a href="/Property/Details/@property.Id" class="btn btn-primary">Подробнее</a>
+                            @if (property.Is3DGenerated)
+                            {
+                                <button class="btn btn-outline" onclick="view3D(@property.Id)">🎮 3D тур</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary" onclick="generate3D(@property.Id)">🤖 Создать 3D</button>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="no-results">
+                <h3>🔍 Ничего не найдено</h3>
+                <p>Попробуйте изменить параметры поиска или <a href="/Property/Upload">добавить новый объект</a></p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function view3D(propertyId) {
+            // Здесь будет код для открытия 3D просмотра
+            alert('Открытие 3D модели для объекта #' + propertyId);
+            // В реальном проекте здесь будет интеграция с 3D движком (Three.js, Babylon.js и т.д.)
+        }
+        
+        function generate3D(propertyId) {
+            if (confirm('Запустить генерацию 3D модели? Это займет 2-3 минуты.')) {
+                fetch('/Property/Generate3D', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ propertyId: propertyId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Ошибка: ' + data.message);
+                    }
+                });
+            }
+        }
+    </script>
+}

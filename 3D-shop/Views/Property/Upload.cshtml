@@ -1,0 +1,260 @@
+@model UploadPropertyViewModel
+@{
+    ViewData["Title"] = "Добавить объект недвижимости";
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1>➕ Добавить объект недвижимости</h1>
+        <p>Загрузите информацию и фотографии, ИИ автоматически создаст 3D модель</p>
+    </div>
+</div>
+
+<div class="upload-section">
+    <div class="container">
+        <form asp-action="Upload" method="post" enctype="multipart/form-data" class="property-form">
+            
+            <!-- Основная информация -->
+            <div class="form-section">
+                <h2>📋 Основная информация</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Property.Title">Название объекта *</label>
+                        <input asp-for="Property.Title" class="form-control" placeholder="Например: Уютная 3-комнатная квартира в центре" required />
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Property.PropertyType">Тип недвижимости *</label>
+                        <select asp-for="Property.PropertyType" class="form-control" required>
+                            <option value="">Выберите тип</option>
+                            <option value="Квартира">Квартира</option>
+                            <option value="Дом">Дом</option>
+                            <option value="Коттедж">Коттедж</option>
+                            <option value="Таунхаус">Таунхаус</option>
+                            <option value="Студия">Студия</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Property.Price">Цена (₽) *</label>
+                        <input asp-for="Property.Price" type="number" class="form-control" placeholder="5000000" required />
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Property.Address">Адрес *</label>
+                        <input asp-for="Property.Address" class="form-control" placeholder="Город, улица, дом" required />
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="Property.Description">Описание</label>
+                    <textarea asp-for="Property.Description" class="form-control" rows="4" 
+                              placeholder="Подробное описание объекта, особенности, преимущества..."></textarea>
+                </div>
+            </div>
+
+            <!-- Характеристики -->
+            <div class="form-section">
+                <h2>📊 Характеристики</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Property.Area">Площадь (м²) *</label>
+                        <input asp-for="Property.Area" type="number" step="0.1" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Property.Rooms">Количество комнат</label>
+                        <select asp-for="Property.Rooms" class="form-control">
+                            <option value="0">Студия</option>
+                            <option value="1">1 комната</option>
+                            <option value="2">2 комнаты</option>
+                            <option value="3">3 комнаты</option>
+                            <option value="4">4 комнаты</option>
+                            <option value="5">5+ комнат</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Property.Floor">Этаж</label>
+                        <input asp-for="Property.Floor" type="number" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Property.TotalFloors">Этажей в доме</label>
+                        <input asp-for="Property.TotalFloors" type="number" class="form-control" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Фотографии для ИИ -->
+            <div class="form-section">
+                <h2>📷 Фотографии для ИИ генерации 3D</h2>
+                <div class="upload-info">
+                    <div class="ai-tips">
+                        <h3>🤖 Советы для лучшего результата ИИ:</h3>
+                        <ul>
+                            <li>📸 Загрузите минимум 5-10 фотографий с разных ракурсов</li>
+                            <li>🏠 Сфотографируйте каждую комнату как минимум с 2-3 сторон</li>
+                            <li>💡 Обеспечьте хорошее освещение</li>
+                            <li>📐 Включите углы комнат и переходы между помещениями</li>
+                            <li>🚪 Сфотографируйте входы, окна, балконы</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="file-upload-area" id="uploadArea">
+                    <div class="upload-zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+                        <div class="upload-icon">📁</div>
+                        <h3>Перетащите файлы сюда или нажмите для выбора</h3>
+                        <p>Поддерживаются: JPG, PNG, HEIC (макс. 10MB каждый)</p>
+                        <input type="file" asp-for="UploadedImages" multiple accept="image/*" class="file-input" id="fileInput" onchange="handleFiles(this.files)" />
+                        <button type="button" class="btn btn-outline" onclick="document.getElementById('fileInput').click()">
+                            Выбрать файлы
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="uploaded-files" id="uploadedFiles"></div>
+            </div>
+
+            <!-- Контактная информация -->
+            <div class="form-section">
+                <h2>📞 Контактная информация</h2>
+                <div class="form-group">
+                    <label asp-for="Property.ContactInfo">Телефон для связи *</label>
+                    <input asp-for="Property.ContactInfo" type="tel" class="form-control" placeholder="+7 (999) 123-45-67" required />
+                </div>
+            </div>
+
+            <!-- Кнопки -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-large">
+                    🚀 Добавить объект и запустить ИИ генерацию
+                </button>
+                <a href="/Property" class="btn btn-outline">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let uploadedFiles = [];
+        
+        function dragOverHandler(ev) {
+            ev.preventDefault();
+            ev.dataTransfer.dropEffect = "copy";
+            document.getElementById('uploadArea').classList.add('drag-over');
+        }
+        
+        function dropHandler(ev) {
+            ev.preventDefault();
+            document.getElementById('uploadArea').classList.remove('drag-over');
+            
+            const files = ev.dataTransfer.files;
+            handleFiles(files);
+        }
+        
+        function handleFiles(files) {
+            const filesArray = Array.from(files);
+            const validFiles = filesArray.filter(file => {
+                if (!file.type.startsWith('image/')) {
+                    alert(`Файл ${file.name} не является изображением`);
+                    return false;
+                }
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`Файл ${file.name} превышает 10MB`);
+                    return false;
+                }
+                return true;
+            });
+            
+            uploadedFiles = uploadedFiles.concat(validFiles);
+            displayUploadedFiles();
+        }
+        
+        function displayUploadedFiles() {
+            const container = document.getElementById('uploadedFiles');
+            container.innerHTML = '';
+            
+            if (uploadedFiles.length > 0) {
+                const title = document.createElement('h3');
+                title.textContent = `📁 Загружено файлов: ${uploadedFiles.length}`;
+                container.appendChild(title);
+                
+                const grid = document.createElement('div');
+                grid.className = 'files-grid';
+                
+                uploadedFiles.forEach((file, index) => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.alt = file.name;
+                    
+                    const name = document.createElement('p');
+                    name.textContent = file.name;
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = '❌';
+                    removeBtn.type = 'button';
+                    removeBtn.onclick = () => removeFile(index);
+                    
+                    fileItem.appendChild(img);
+                    fileItem.appendChild(name);
+                    fileItem.appendChild(removeBtn);
+                    grid.appendChild(fileItem);
+                });
+                
+                container.appendChild(grid);
+                
+                // AI генерация предпросмотр
+                if (uploadedFiles.length >= 5) {
+                    const aiPreview = document.createElement('div');
+                    aiPreview.className = 'ai-preview';
+                    aiPreview.innerHTML = `
+                        <h4>🤖 Предварительный анализ ИИ:</h4>
+                        <div class="ai-analysis">
+                            <span class="ai-check">✅ Достаточно фотографий для 3D генерации</span>
+                            <span class="ai-check">✅ Качество изображений подходящее</span>
+                            <span class="ai-estimate">⏱️ Ожидаемое время генерации: 2-3 минуты</span>
+                        </div>
+                    `;
+                    container.appendChild(aiPreview);
+                }
+            }
+        }
+        
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            displayUploadedFiles();
+        }
+        
+        // Обработка отправки формы
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (uploadedFiles.length === 0) {
+                e.preventDefault();
+                alert('Пожалуйста, загрузите хотя бы одну фотографию для ИИ генерации');
+                return;
+            }
+            
+            if (uploadedFiles.length < 3) {
+                if (!confirm('Рекомендуется загрузить минимум 3-5 фотографий для лучшего качества 3D модели. Продолжить?')) {
+                    e.preventDefault();
+                    return;
+                }
+            }
+            
+            // Показываем прогресс
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '🚀 Загрузка и запуск ИИ...';
+            submitBtn.disabled = true;
+        });
+    </script>
+}

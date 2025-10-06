@@ -1,0 +1,363 @@
+@model List<RealEstate3D.Models.Property>
+@{
+    ViewData["Title"] = "Сравнение объектов недвижимости";
+}
+
+<div class="comparison-page">
+    <div class="page-header">
+        <div class="container">
+            <div class="header-content">
+                <h1>🏘️ Сравнение недвижимости</h1>
+                <p>Сравните до 3 объектов недвижимости side-by-side</p>
+                
+                <div class="comparison-controls">
+                    <button class="add-property-btn" onclick="openPropertySelector()">
+                        ➕ Добавить объект для сравнения
+                    </button>
+                    <button class="clear-comparison-btn" onclick="clearComparison()">
+                        🗑️ Очистить все
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="comparison-container" id="comparison-container">
+            @if (Model != null && Model.Any())
+            {
+                <div class="properties-comparison">
+                    @for (int i = 0; i < Math.Min(Model.Count, 3); i++)
+                    {
+                        var property = Model[i];
+                        <div class="property-comparison-card" data-property-id="@property.Id">
+                            <div class="card-header">
+                                <h3>@property.Title</h3>
+                                <button class="remove-btn" onclick="removeFromComparison(@property.Id)">×</button>
+                            </div>
+                            
+                            <div class="property-image">
+                                @if (!string.IsNullOrEmpty(property.ImagePath))
+                                {
+                                    <img src="@property.ImagePath" alt="@property.Title" />
+                                }
+                                else
+                                {
+                                    <div class="no-image">
+                                        <div class="no-image-placeholder">
+                                            <span>🏠</span>
+                                            <p>Изображение недоступно</p>
+                                        </div>
+                                    </div>
+                                }
+                                
+                                <div class="image-overlay">
+                                    <button class="view-3d-btn" onclick="open3DViewer(@property.Id)">
+                                        🎯 3D Просмотр
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="comparison-details">
+                                <div class="price-section">
+                                    <div class="price">@property.Price.ToString("N0") ₽</div>
+                                    <div class="price-per-sqm">@(((double)property.Price / property.Area).ToString("N0")) ₽/м²</div>
+                                </div>
+
+                                <div class="specs-comparison">
+                                    <div class="spec-item">
+                                        <span class="spec-label">Площадь</span>
+                                        <span class="spec-value">@property.Area м²</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Комнаты</span>
+                                        <span class="spec-value">@property.Rooms</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Этаж</span>
+                                        <span class="spec-value">@(property.Id % 10 + 1) / @(property.Id % 5 + 5)</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Год постройки</span>
+                                        <span class="spec-value">@(2020 - (property.Id % 20))</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Район</span>
+                                        <span class="spec-value">@(property.Location ?? "Центральный")</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Парковка</span>
+                                        <span class="spec-value">@(property.Id % 2 == 0 ? "Да" : "Нет")</span>
+                                    </div>
+                                </div>
+
+                                <div class="rating-section">
+                                    <div class="rating-item">
+                                        <span class="rating-label">Рейтинг</span>
+                                        <div class="rating-stars">
+                                            @{
+                                                var rating = 3 + (property.Id % 3);
+                                                for (int j = 1; j <= 5; j++)
+                                                {
+                                                    if (j <= rating)
+                                                    {
+                                                        <span class="star filled">⭐</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="star">☆</span>
+                                                    }
+                                                }
+                                            }
+                                            <span class="rating-number">@rating/5</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="rating-item">
+                                        <span class="rating-label">Транспорт</span>
+                                        <div class="transport-rating">
+                                            @{
+                                                var transportRating = 2 + (property.Id % 4);
+                                                var transportLabels = new[] { "", "", "Плохо", "Удовл.", "Хорошо", "Отлично" };
+                                            }
+                                            <span class="transport-score">@transportLabels[transportRating]</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="rating-item">
+                                        <span class="rating-label">Инфраструктура</span>
+                                        <div class="infrastructure-rating">
+                                            @{
+                                                var infraRating = 2 + (property.Id % 4);
+                                                var infraLabels = new[] { "", "", "Слабая", "Средняя", "Хорошая", "Развитая" };
+                                            }
+                                            <span class="infra-score">@infraLabels[infraRating]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="action-buttons">
+                                    <a href="/Property/Details/@property.Id" class="detail-btn">
+                                        📋 Подробнее
+                                    </a>
+                                    <button class="favorite-btn @(property.Id % 3 == 0 ? "active" : "")" 
+                                            onclick="toggleFavorite(@property.Id)">
+                                        ❤️ В избранное
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                
+                <div class="comparison-summary">
+                    <h3>📊 Сводка сравнения</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-label">Самый дешевый</div>
+                            <div class="summary-value">@Model.OrderBy(p => p.Price).First().Title</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Самый просторный</div>
+                            <div class="summary-value">@Model.OrderByDescending(p => p.Area).First().Title</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Лучшая цена за м²</div>
+                            <div class="summary-value">@Model.OrderBy(p => (double)p.Price / p.Area).First().Title</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Больше всего комнат</div>
+                            <div class="summary-value">@Model.OrderByDescending(p => p.Rooms).First().Title</div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="empty-comparison">
+                    <div class="empty-icon">🏠</div>
+                    <h3>Нет объектов для сравнения</h3>
+                    <p>Добавьте до 3 объектов недвижимости для сравнения их характеристик</p>
+                    <button class="add-first-property-btn" onclick="openPropertySelector()">
+                        ➕ Добавить первый объект
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Модальное окно выбора объектов -->
+    <div class="property-selector-modal" id="property-selector-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Выберите объект для сравнения</h3>
+                <button class="close-modal-btn" onclick="closePropertySelector()">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="search-bar">
+                    <input type="text" placeholder="Поиск объектов..." id="property-search">
+                    <button class="search-btn">🔍</button>
+                </div>
+                
+                <div class="properties-grid" id="properties-grid">
+                    <!-- Объекты будут загружены через AJAX -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3D Viewer Modal -->
+    <div class="viewer-modal" id="viewer-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="viewer-title">3D Просмотр</h3>
+                <button class="close-modal-btn" onclick="close3DViewer()">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-3d-viewer" class="modal-3d-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Управление сравнением объектов
+let comparisonList = JSON.parse(localStorage.getItem('comparisonList')) || [];
+let modal3DViewer = null;
+
+function openPropertySelector() {
+    document.getElementById('property-selector-modal').classList.add('active');
+    loadAvailableProperties();
+}
+
+function closePropertySelector() {
+    document.getElementById('property-selector-modal').classList.remove('active');
+}
+
+function loadAvailableProperties() {
+    // Симуляция загрузки объектов
+    fetch('/Property/GetAvailableProperties')
+        .then(response => response.json())
+        .then(properties => {
+            const grid = document.getElementById('properties-grid');
+            grid.innerHTML = properties.map(property => `
+                <div class="property-selector-item" onclick="addToComparison(${property.id})">
+                    <div class="property-image">
+                        <img src="${property.imagePath || '/images/no-image.svg'}" alt="${property.title}">
+                    </div>
+                    <div class="property-info">
+                        <h4>${property.title}</h4>
+                        <div class="property-price">${property.price.toLocaleString()} ₽</div>
+                        <div class="property-specs">${property.area} м² • ${property.rooms} комн.</div>
+                    </div>
+                </div>
+            `).join('');
+        })
+        .catch(error => {
+            console.error('Ошибка загрузки объектов:', error);
+        });
+}
+
+function addToComparison(propertyId) {
+    if (comparisonList.length >= 3) {
+        alert('Можно сравнивать максимум 3 объекта');
+        return;
+    }
+    
+    if (!comparisonList.includes(propertyId)) {
+        comparisonList.push(propertyId);
+        localStorage.setItem('comparisonList', JSON.stringify(comparisonList));
+        
+        // Перезагружаем страницу с новым списком сравнения
+        window.location.href = `/Property/Compare?ids=${comparisonList.join(',')}`;
+    }
+    
+    closePropertySelector();
+}
+
+function removeFromComparison(propertyId) {
+    comparisonList = comparisonList.filter(id => id !== propertyId);
+    localStorage.setItem('comparisonList', JSON.stringify(comparisonList));
+    
+    // Перезагружаем страницу
+    if (comparisonList.length > 0) {
+        window.location.href = `/Property/Compare?ids=${comparisonList.join(',')}`;
+    } else {
+        window.location.href = '/Property/Compare';
+    }
+}
+
+function clearComparison() {
+    if (confirm('Очистить все объекты сравнения?')) {
+        comparisonList = [];
+        localStorage.removeItem('comparisonList');
+        window.location.href = '/Property/Compare';
+    }
+}
+
+function open3DViewer(propertyId) {
+    const modal = document.getElementById('viewer-modal');
+    modal.classList.add('active');
+    
+    // Создаем новый 3D viewer в модальном окне
+    if (modal3DViewer) {
+        modal3DViewer.dispose();
+    }
+    
+    modal3DViewer = new RealEstate3DViewer('modal-3d-viewer');
+    modal3DViewer.createDemoHouse();
+    
+    document.getElementById('viewer-title').textContent = `3D Просмотр - Объект #${propertyId}`;
+}
+
+function close3DViewer() {
+    document.getElementById('viewer-modal').classList.remove('active');
+    if (modal3DViewer) {
+        modal3DViewer.dispose();
+        modal3DViewer = null;
+    }
+}
+
+function toggleFavorite(propertyId) {
+    const btn = event.target;
+    btn.classList.toggle('active');
+    
+    if (btn.classList.contains('active')) {
+        btn.textContent = '💖 В избранном';
+    } else {
+        btn.textContent = '❤️ В избранное';
+    }
+}
+
+// Поиск в модальном окне
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('property-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const items = document.querySelectorAll('.property-selector-item');
+            
+            items.forEach(item => {
+                const title = item.querySelector('h4').textContent.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+
+// Закрытие модальных окон по клику вне их
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('property-selector-modal') || e.target.classList.contains('viewer-modal')) {
+        e.target.classList.remove('active');
+        if (modal3DViewer) {
+            modal3DViewer.dispose();
+            modal3DViewer = null;
+        }
+    }
+});
+</script>

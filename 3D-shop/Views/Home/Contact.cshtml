@@ -1,0 +1,68 @@
+@{
+    ViewData["Title"] = "Контакты";
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1>Свяжитесь с нами</h1>
+        <p>@ViewBag.Message</p>
+    </div>
+</div>
+
+<div class="content-section">
+    <div class="container">
+        <div class="contact-content">
+            <div class="contact-info">
+                <h2>📧 Контактная информация</h2>
+                <div class="contact-item">
+                    <h3>📍 Адрес</h3>
+                    <p>Россия, Москва</p>
+                </div>
+                <div class="contact-item">
+                    <h3>📞 Телефон</h3>
+                    <p>+7 (xxx) xxx-xx-xx</p>
+                </div>
+                <div class="contact-item">
+                    <h3>✉️ Email</h3>
+                    <p>info@3dshop.ru</p>
+                </div>
+                <div class="contact-item">
+                    <h3>🕒 Время работы</h3>
+                    <p>Пн-Пт: 9:00-18:00<br>Сб-Вс: 10:00-16:00</p>
+                </div>
+                <div class="contact-item">
+                    <h3>🌐 Соцсети</h3>
+                    <p><a href="https://github.com/kanubek/3D-shop" target="_blank">GitHub проекта</a></p>
+                </div>
+            </div>
+
+            <div class="contact-form">
+                <h2>💬 Написать нам</h2>
+                <form>
+                    <div class="form-group">
+                        <label for="name">Имя:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Сообщение:</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Спасибо за ваше сообщение! (Это демо-версия)');
+        });
+    </script>
+}

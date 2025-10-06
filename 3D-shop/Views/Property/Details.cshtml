@@ -1,0 +1,335 @@
+@model Property
+
+@{
+    ViewData["Title"] = $"{Model.Title} - Детали недвижимости";
+}
+
+<div class="container">
+    <!-- Заголовок недвижимости -->
+    <div class="property-detail-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2">@Model.Title</h1>
+                <p class="lead mb-2">@Model.Location</p>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="badge bg-primary">@Model.PropertyType</span>
+                    <span class="text-muted">ID: @Model.Id</span>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <h2 class="price-tag mb-0">@RealEstate3D.Helpers.CurrencyHelper.FormatKyrgyzCurrency(Model.Price)</h2>
+                <p class="text-muted">@RealEstate3D.Helpers.CurrencyHelper.FormatKyrgyzCurrencyShort(Model.Price / (decimal)Model.Area) за м²</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Фото галерея -->
+    <div class="property-gallery">
+        <div class="property-main-image">
+            @if (Model.ImageUrls != null && Model.ImageUrls.Any())
+            {
+                <img id="mainImage" src="@Model.ImageUrls.First()" alt="@Model.Title" />
+            }
+            else
+            {
+                <img src="/images/no-image.svg" alt="Нет изображения" />
+            }
+        </div>
+        
+        @if (Model.ImageUrls != null && Model.ImageUrls.Count > 1)
+        {
+            <div class="property-thumbnails">
+                @for (int i = 0; i < Math.Min(Model.ImageUrls.Count, 4); i++)
+                {
+                    <div class="property-thumbnail @(i == 0 ? "active" : "")" onclick="changeMainImage('@Model.ImageUrls[i]', this)">
+                        <img src="@Model.ImageUrls[i]" alt="@Model.Title" />
+                    </div>
+                }
+                @if (Model.ImageUrls.Count > 4)
+                {
+                    <div class="property-thumbnail more-photos">
+                        <span>+@(Model.ImageUrls.Count - 4) фото</span>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- 3D Вьювер -->
+    <div class="viewer-3d-container">
+        <div id="model3d" data-model-url="@Model.Model3DUrl"></div>
+        
+        <!-- Контролы вьювера -->
+        <div class="viewer-controls">
+            <button class="control-btn" onclick="resetCamera()" title="Сбросить камеру">
+                📷
+            </button>
+            <button class="control-btn" onclick="toggleWireframe()" title="Каркас">
+                🔧
+            </button>
+            <button class="control-btn" onclick="toggleAutoRotate()" title="Авто-поворот">
+                🔄
+            </button>
+            <button class="control-btn" onclick="toggleFullscreen()" title="Полный экран">
+                🔍
+            </button>
+            <button class="control-btn" onclick="takeScreenshot()" title="Скриншот">
+                📸
+            </button>
+            <button class="control-btn" onclick="toggleSettings()" title="Настройки">
+                ⚙️
+            </button>
+        </div>
+
+        <!-- Панель настроек -->
+        <div id="viewer-settings" class="viewer-settings" style="display: none;">
+            <h4>🎛️ Настройки вьювера</h4>
+            <div class="setting-group">
+                <label>Освещение:</label>
+                <input type="range" id="lighting-intensity" min="0" max="2" step="0.1" value="1">
+            </div>
+            <div class="setting-group">
+                <label>Качество теней:</label>
+                <select id="shadow-quality">
+                    <option value="low">Низкое</option>
+                    <option value="medium" selected>Среднее</option>
+                    <option value="high">Высокое</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label>Фон:</label>
+                <select id="background-type">
+                    <option value="gradient">Градиент</option>
+                    <option value="sky">Небо</option>
+                    <option value="dark">Темный</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label>
+                    <input type="checkbox" id="show-grid" checked> Показать сетку
+                </label>
+            </div>
+            <div class="setting-group">
+                <label>
+                    <input type="checkbox" id="show-measurements"> Измерения
+                </label>
+            </div>
+            <div class="setting-group">
+                <label>
+                    <input type="checkbox" id="show-tour-points"> Точки интереса
+                </label>
+            </div>
+        </div>
+
+        <!-- Режимы просмотра -->
+        <div class="view-modes">
+            <button class="view-mode-btn active" data-mode="normal">Обычный</button>
+            <button class="view-mode-btn" data-mode="cinematic">Кино</button>
+            <button class="view-mode-btn" data-mode="blueprint">Чертеж</button>
+            <button class="view-mode-btn" data-mode="vr">VR</button>
+        </div>
+
+        <!-- Панель измерений -->
+        <div id="measurement-tools" class="measurement-tools">
+            <h5>📏 Измерения</h5>
+            <div class="measurement-item">
+                <span class="measurement-label">Длина:</span>
+                <span class="measurement-value" id="length-measure">--</span>
+            </div>
+            <div class="measurement-item">
+                <span class="measurement-label">Ширина:</span>
+                <span class="measurement-value" id="width-measure">--</span>
+            </div>
+            <div class="measurement-item">
+                <span class="measurement-label">Высота:</span>
+                <span class="measurement-value" id="height-measure">--</span>
+            </div>
+            <div class="measurement-item">
+                <span class="measurement-label">Площадь:</span>
+                <span class="measurement-value" id="area-measure">--</span>
+            </div>
+        </div>
+
+        <!-- Точки тура -->
+        <div class="tour-points" id="tour-points">
+            <!-- Точки будут добавлены динамически -->
+        </div>
+
+        <!-- Информация о модели -->
+        <div class="viewer-info">
+            <h4>🏠 3D Модель недвижимости</h4>
+            <p>Используйте мышь для навигации: <br>
+            • Левая кнопка - поворот <br>
+            • Колесико - масштаб <br>
+            • Правая кнопка - панорама</p>
+        </div>
+
+        <!-- Лоадер -->
+        <div id="model-loader" style="display: none;">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">Загружаем 3D модель...</div>
+            <div class="loader-progress">
+                <div class="loader-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Характеристики недвижимости -->
+    <div class="property-specs">
+        <div class="spec-item">
+            <div class="icon">🏠</div>
+            <div class="label">Площадь</div>
+            <div class="value">@Model.Area м²</div>
+        </div>
+        <div class="spec-item">
+            <div class="icon">🚪</div>
+            <div class="label">Комнаты</div>
+            <div class="value">@Model.Rooms</div>
+        </div>
+        <div class="spec-item">
+            <div class="icon">📍</div>
+            <div class="label">Этаж</div>
+            <div class="value">@(Model.Id % 10 + 1) / @(Model.Id % 5 + 5)</div>
+        </div>
+        <div class="spec-item">
+            <div class="icon">🏗️</div>
+            <div class="label">Год постройки</div>
+            <div class="value">@(2020 - (Model.Id % 20))</div>
+        </div>
+        <div class="spec-item">
+            <div class="icon">🚗</div>
+            <div class="label">Парковка</div>
+            <div class="value">@(Model.Id % 3 == 0 ? "Есть" : "Нет")</div>
+        </div>
+        <div class="spec-item">
+            <div class="icon">🌡️</div>
+            <div class="label">Отопление</div>
+            <div class="value">Центральное</div>
+        </div>
+    </div>
+
+    <!-- Основная информация -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="property-description">
+                <h3>📝 Описание</h3>
+                <div class="description-content">
+                    <p>@Model.Description</p>
+                    
+                    <h4>🎯 Особенности недвижимости:</h4>
+                    <ul class="features-list">
+                        <li>✅ Современная планировка с продуманным зонированием</li>
+                        <li>✅ Качественная отделка с использованием экологичных материалов</li>
+                        <li>✅ Панорамные окна с видом на @(Model.Id % 2 == 0 ? "парк" : "город")</li>
+                        <li>✅ Развитая инфраструктура района</li>
+                        <li>✅ Удобная транспортная доступность</li>
+                        <li>✅ Охраняемая территория с видеонаблюдением</li>
+                    </ul>
+
+                    <h4>🏘️ Инфраструктура:</h4>
+                    <div class="infrastructure-grid">
+                        <span class="infra-item">🏪 Магазины - 200м</span>
+                        <span class="infra-item">🏫 Школа - 500м</span>
+                        <span class="infra-item">🚇 Метро - @(Model.Id % 10 + 5) мин</span>
+                        <span class="infra-item">🏥 Поликлиника - 800м</span>
+                        <span class="infra-item">🌳 Парк - 300м</span>
+                        <span class="infra-item">🚌 Остановка - 100м</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="contact-section">
+                <div class="contact-card">
+                    <h4>📞 Связаться с продавцом</h4>
+                    <div class="seller-info">
+                        <div class="seller-avatar">
+                            <span>👤</span>
+                        </div>
+                        <div class="seller-details">
+                            <h5>Агент по недвижимости</h5>
+                            <p class="text-muted">Проверенный продавец</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-buttons">
+                        <button class="btn btn-primary btn-block mb-2">
+                            📱 Показать телефон
+                        </button>
+                        <button class="btn btn-outline btn-block mb-2">
+                            💬 Написать сообщение
+                        </button>
+                        <button class="btn btn-outline btn-block">
+                            ❤️ В избранное
+                        </button>
+                    </div>
+                </div>
+
+                <div class="quick-actions mt-4">
+                    <h5>⚡ Быстрые действия</h5>
+                    <div class="action-buttons">
+                        <button class="btn btn-outline-light btn-sm">
+                            📋 Заказать звонок
+                        </button>
+                        <button class="btn btn-outline-light btn-sm">
+                            📅 Записаться на просмотр
+                        </button>
+                        <button class="btn btn-outline-light btn-sm">
+                            📊 Получить отчет о цене
+                        </button>
+                        <button class="btn btn-outline-light btn-sm">
+                            🏦 Помощь с ипотекой
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Смена главного изображения в галерее
+function changeMainImage(imageUrl, thumbnail) {
+    document.getElementById('mainImage').src = imageUrl;
+    
+    // Обновляем активный thumbnail
+    document.querySelectorAll('.property-thumbnail').forEach(thumb => {
+        thumb.classList.remove('active');
+    });
+    thumbnail.classList.add('active');
+}
+
+// Показать телефон
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneBtn = document.querySelector('.btn-primary');
+    if (phoneBtn) {
+        phoneBtn.addEventListener('click', function() {
+            const phoneNumber = '+7 (495) 123-45-67';
+            this.innerHTML = `📱 ${phoneNumber}`;
+            this.disabled = true;
+        });
+    }
+    
+    // Инициализация системы отзывов
+    initReviewSystem(@Model.Id);
+    
+    // Инициализация ипотечного калькулятора
+    initMortgageCalculator(@Model.Price);
+});
+</script>
+
+@section Scripts {
+    <!-- Three.js библиотека -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    
+    <!-- Наши скрипты -->
+    <script src="~/js/3d-viewer.js"></script>
+    <script src="~/js/ai-assistant.js"></script>
+    <script src="~/js/furniture-manager.js"></script>
+    <script src="~/js/review-system.js"></script>
+    <script src="~/js/mortgage-calculator.js"></script>
+}

@@ -1,0 +1,55 @@
+<!DOCTYPE htm                <div class="navbar-menu">
+                    <a class="navbar-item" href="/">🏠 Главная</a>
+                    <a class="navbar-item" href="/Property">🏘️ Недвижимость</a>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a class="navbar-item" href="/Property/Upload">➕ Добавить объект</a>
+                        <a class="navbar-item" href="/Account/Profile">👤 Профиль</a>
+                        <form asp-controller="Account" asp-action="Logout" method="post" style="display: inline;">
+                            <button type="submit" class="navbar-item btn-link">🚪 Выйти</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="navbar-item" href="/Account/Login">🔐 Вход</a>
+                        <a class="navbar-item" href="/Account/Register">📝 Регистрация</a>
+                    }
+                    <a class="navbar-item" href="/Home/About">ℹ️ О платформе</a>
+                    <a class="navbar-item" href="/Home/Contact">📞 Контакты</a>
+                </div>l lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - RealEstate3D</title>
+    <link href="~/css/site.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a class="navbar-brand" href="/">🏠 RealEstate3D</a>
+                <div class="navbar-menu">
+                    <a class="navbar-item" href="/">🏠 Главная</a>
+                    <a class="navbar-item" href="/Property">🏘️ Недвижимость</a>
+                    <a class="navbar-item" href="/Property/Upload">➕ Добавить объект</a>
+                    <a class="navbar-item" href="/Home/About">ℹ️ О платформе</a>
+                    <a class="navbar-item" href="/Home/Contact">� Контакты</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <main role="main" class="main-content">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2025 - RealEstate3D - Недвижимость будущего с ИИ технологиями - <a href="/Home/About">О платформе</a></p>
+        </div>
+    </footer>
+
+    <script src="~/js/site.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

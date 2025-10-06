@@ -1,0 +1,89 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Главная - Недвижимость будущего";
+}
+
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">@Model.Title</h1>
+        <p class="hero-subtitle">@Model.WelcomeMessage</p>
+        <div class="hero-info">
+            <p><strong>Добро пожаловать, @Model.UserName!</strong></p>
+            <p>Время сервера: <span class="time">@Model.CurrentTime.ToString("dd.MM.yyyy HH:mm:ss")</span></p>
+            <div class="stats-inline">
+                <span>📊 Объектов: <strong>@Model.TotalProperties</strong></span>
+                <span>🎯 3D моделей: <strong>@Model.Properties3D</strong></span>
+            </div>
+        </div>
+        <div class="hero-actions">
+            <a href="/Property" class="btn btn-primary">🏘️ Посмотреть недвижимость</a>
+            <a href="/Property/Upload" class="btn btn-secondary">➕ Добавить объект</a>
+        </div>
+    </div>
+</div>
+
+<div class="features-section">
+    <div class="container">
+        <h2>🤖 Как работает наша ИИ технология</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>📷 1. Загрузите фото</h3>
+                <p>Просто загрузите несколько фотографий квартиры или дома с разных ракурсов</p>
+            </div>
+            <div class="feature-card">
+                <h3>🤖 2. ИИ создает 3D</h3>
+                <p>Наш искусственный интеллект автоматически создает полную 3D модель за 2-3 минуты</p>
+            </div>
+            <div class="feature-card">
+                <h3>🎮 3. Виртуальный тур</h3>
+                <p>Покупатели могут "гулять" по дому в 3D и рассматривать все детали</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.FeaturedProperties.Any())
+{
+    <div class="featured-section">
+        <div class="container">
+            <h2>⭐ Рекомендуемые объекты</h2>
+            <div class="properties-grid">
+                @foreach (var property in Model.FeaturedProperties)
+                {
+                    <div class="property-card">
+                        <div class="property-badge">
+                            @if (property.Is3DGenerated)
+                            {
+                                <span class="badge-3d">🎯 3D готов</span>
+                            }
+                            else
+                            {
+                                <span class="badge-processing">⏳ Обработка</span>
+                            }
+                        </div>
+                        <h3>@property.Title</h3>
+                        <div class="property-details">
+                            <span>💰 @property.Price.ToString("C0", new System.Globalization.CultureInfo("ru-RU"))</span>
+                            <span>📐 @property.Area м²</span>
+                            <span>🏠 @property.PropertyType</span>
+                        </div>
+                        <a href="/Property/Details/@property.Id" class="btn btn-outline">Подробнее</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Обновление времени каждую секунду
+        setInterval(function() {
+            fetch('/Home/Api')
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector('.time').textContent = new Date(data.timestamp).toLocaleString('ru-RU');
+                });
+        }, 1000);
+    </script>
+}

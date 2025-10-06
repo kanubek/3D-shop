@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - RealEstate3D</title>
+    <link href="~/css/site.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a class="navbar-brand" href="/">🏠 RealEstate3D</a>
+                <div class="navbar-menu">
+                    <a class="navbar-item" href="/">🏠 Главная</a>
+                    <a class="navbar-item" href="/Property">🏘️ Недвижимость</a>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a class="navbar-item" href="/Property/Upload">➕ Добавить объект</a>
+                        <a class="navbar-item" href="/Account/Profile">👤 Профиль</a>
+                        <form asp-controller="Account" asp-action="Logout" method="post" style="display: inline;">
+                            <button type="submit" class="navbar-item btn-link">🚪 Выйти</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="navbar-item" href="/Account/Login">🔐 Вход</a>
+                        <a class="navbar-item" href="/Account/Register">📝 Регистрация</a>
+                    }
+                    <a class="navbar-item" href="/Property/Compare">⚖️ Сравнить</a>
+                    <a class="navbar-item" href="/Property/Map">🗺️ Карта</a>
+                    <a class="navbar-item" href="/Home/About">ℹ️ О платформе</a>
+                    <a class="navbar-item" href="/Home/Contact">📞 Контакты</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <main role="main" class="main-content">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>🏠 RealEstate3D</h4>
+                    <p>Революционная платформа недвижимости с технологиями ИИ и 3D моделирования</p>
+                    <div class="social-links">
+                        <a href="#" title="Телеграм">📱</a>
+                        <a href="#" title="ВКонтакте">🔗</a>
+                        <a href="#" title="YouTube">📺</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h5>Недвижимость</h5>
+                    <ul>
+                        <li><a href="/Property?type=apartment">Квартиры</a></li>
+                        <li><a href="/Property?type=house">Дома</a></li>
+                        <li><a href="/Property?type=commercial">Коммерческая</a></li>
+                        <li><a href="/Property/Upload">Разместить объект</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h5>Технологии</h5>
+                    <ul>
+                        <li><a href="/Home/About#ai">ИИ генерация 3D</a></li>
+                        <li><a href="/Home/About#viewer">3D просмотр</a></li>
+                        <li><a href="/Home/About#features">Возможности</a></li>
+                        <li><a href="/Home/About#api">API для разработчиков</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h5>Поддержка</h5>
+                    <ul>
+                        <li><a href="/Home/Contact">Контакты</a></li>
+                        <li><a href="/Help">Помощь</a></li>
+                        <li><a href="/Terms">Условия использования</a></li>
+                        <li><a href="/Privacy">Конфиденциальность</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 RealEstate3D. Все права защищены. Будущее недвижимости - уже здесь! 🚀</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Three.js и другие 3D библиотеки - загружаем глобально -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+    
+    <!-- Основные скрипты сайта -->
+    <script src="~/js/site.js"></script>
+    <script src="~/js/notification-system.js"></script>
+    
+    <!-- Дополнительные скрипты для конкретных страниц -->
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

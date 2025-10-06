@@ -1,0 +1,127 @@
+@{
+    ViewData["Title"] = "Ошибка";
+}
+
+<div class="container">
+    <div class="page-header">
+        <h1>❌ Что-то пошло не так</h1>
+        <p>Произошла ошибка при обработке вашего запроса.</p>
+    </div>
+
+    <div class="content-section">
+        <div class="error-content">
+            <div class="error-illustration">
+                <div class="error-icon">🏠💥</div>
+                <h2>Упс! Страница недоступна</h2>
+                <p>Возможно, произошла временная ошибка или страница была перемещена.</p>
+            </div>
+
+            <div class="error-actions">
+                <a href="/" class="btn btn-primary">🏠 Вернуться на главную</a>
+                <a href="/Property" class="btn btn-secondary">🏘️ Посмотреть недвижимость</a>
+                <button onclick="history.back()" class="btn btn-outline">← Вернуться назад</button>
+            </div>
+
+            <div class="error-info">
+                <h3>🔧 Что можно сделать:</h3>
+                <ul>
+                    <li>Проверьте правильность URL адреса</li>
+                    <li>Попробуйте обновить страницу</li>
+                    <li>Вернитесь на главную страницу</li>
+                    <li>Свяжитесь с нами, если проблема повторяется</li>
+                </ul>
+            </div>
+
+            <div class="contact-support">
+                <p>💬 Нужна помощь? <a href="/Home/Contact">Свяжитесь с поддержкой</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-content {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+    color: white;
+}
+
+.error-illustration {
+    margin-bottom: 2rem;
+}
+
+.error-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.error-illustration h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #ff6b6b;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.error-info {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.error-info h3 {
+    color: #74b9ff;
+    margin-bottom: 1rem;
+}
+
+.error-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.error-info li {
+    padding: 0.5rem 0;
+    border-left: 3px solid #74b9ff;
+    padding-left: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.contact-support {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.contact-support a {
+    color: #74b9ff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.contact-support a:hover {
+    text-decoration: underline;
+}
+
+@@media (max-width: 768px) {
+    .error-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .error-actions .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+</style>
