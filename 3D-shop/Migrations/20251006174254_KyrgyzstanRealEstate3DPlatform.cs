@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RealEstate3D.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class KyrgyzstanRealEstate3DPlatform : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -174,12 +174,14 @@ namespace RealEstate3D.Migrations
                     Title = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: false),
                     Address = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    Location = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PropertyType = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     Rooms = table.Column<int>(type: "INTEGER", nullable: false),
                     Area = table.Column<double>(type: "REAL", nullable: false),
                     Floor = table.Column<int>(type: "INTEGER", nullable: false),
                     TotalFloors = table.Column<int>(type: "INTEGER", nullable: false),
+                    ImagePath = table.Column<string>(type: "TEXT", nullable: true),
                     Model3DUrl = table.Column<string>(type: "TEXT", nullable: true),
                     Is3DGenerated = table.Column<bool>(type: "INTEGER", nullable: false),
                     AI3DStatus = table.Column<int>(type: "INTEGER", nullable: false),
@@ -287,16 +289,26 @@ namespace RealEstate3D.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "CreatedAt", "Email", "EmailConfirmed", "FirstName", "IsActive", "LastLoginAt", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePicture", "Role", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "admin-user-id", 0, "b2a66aef-8716-48b8-9d56-e2dfa5955a44", new DateTime(2025, 10, 6, 15, 50, 15, 253, DateTimeKind.Local).AddTicks(2024), "admin@realestate3d.com", true, "Администратор", true, new DateTime(2025, 10, 6, 15, 50, 15, 253, DateTimeKind.Local).AddTicks(2027), "Системы", false, null, "ADMIN@REALESTATE3D.COM", "ADMIN@REALESTATE3D.COM", null, null, false, null, 3, "6ba42776-daad-4ac3-b66e-e3a1aaef4d08", false, "admin@realestate3d.com" });
+                values: new object[] { "admin-user-id", 0, "eeb6e965-dab9-4895-867c-eae15e5326bd", new DateTime(2025, 10, 6, 23, 42, 53, 371, DateTimeKind.Local).AddTicks(4612), "admin@realestate3d.kg", true, "Администратор", true, new DateTime(2025, 10, 6, 23, 42, 53, 371, DateTimeKind.Local).AddTicks(4615), "Системы", false, null, "ADMIN@REALESTATE3D.KG", "ADMIN@REALESTATE3D.KG", "AQAAAAIAAYagAAAAED4wec7Lm0lDGBO/iCgusNA6jRGUDya7BDPLv4KsvMQcF+fK1tmz0+5hCNl70ENxIg==", null, false, null, 3, "e33e4f7b-2ce5-411f-be8c-817696ac36f6", false, "admin@realestate3d.kg" });
 
             migrationBuilder.InsertData(
                 table: "Properties",
-                columns: new[] { "Id", "AI3DStatus", "Address", "Area", "ContactInfo", "CreatedAt", "Description", "FavoritesCount", "Floor", "Is3DGenerated", "Latitude", "Longitude", "MetaDescription", "MetaTitle", "Model3DUrl", "OwnerId", "Price", "PropertyType", "Rooms", "Status", "Title", "TotalFloors", "UpdatedAt", "ViewsCount" },
+                columns: new[] { "Id", "AI3DStatus", "Address", "Area", "ContactInfo", "CreatedAt", "Description", "FavoritesCount", "Floor", "ImagePath", "Is3DGenerated", "Latitude", "Location", "Longitude", "MetaDescription", "MetaTitle", "Model3DUrl", "OwnerId", "Price", "PropertyType", "Rooms", "Status", "Title", "TotalFloors", "UpdatedAt", "ViewsCount" },
                 values: new object[,]
                 {
-                    { 1, 2, "г. Москва, ул. Тверская, 15, кв. 45", 85.5, "+7 (999) 123-45-67", new DateTime(2025, 9, 26, 15, 50, 15, 253, DateTimeKind.Local).AddTicks(2282), "Просторная квартира с панорамными окнами, современным ремонтом и отличным видом на город. Все коммуникации новые, встроенная кухня, просторные комнаты.", 23, 12, true, 55.755800000000001, 37.617600000000003, null, null, "/models/apartment1.glb", "admin-user-id", 15000000m, "Квартира", 3, 0, "Современная 3-комнатная квартира в центре", 25, null, 156 },
-                    { 2, 2, "Московская область, г. Одинцово, ул. Садовая, 12", 180.0, "+7 (999) 765-43-21", new DateTime(2025, 10, 1, 15, 50, 15, 253, DateTimeKind.Local).AddTicks(2299), "Двухэтажный коттедж в экологически чистом районе. Большой участок с садом, гараж на 2 машины, баня, беседка. Идеально для семьи с детьми.", 12, 1, true, 55.6736, 37.290700000000001, null, null, "/models/house1.glb", "admin-user-id", 25000000m, "Дом", 5, 0, "Загородный дом с участком 15 соток", 2, null, 89 },
-                    { 3, 1, "г. Санкт-Петербург, пр. Энгельса, 150", 35.0, "+7 (812) 555-11-22", new DateTime(2025, 10, 4, 15, 50, 15, 253, DateTimeKind.Local).AddTicks(2308), "Уютная студия в новом жилом комплексе. Современная планировка, высокие потолки, французское остекление. Развитая инфраструктура района.", 8, 8, false, 59.931100000000001, 30.360900000000001, null, null, null, "admin-user-id", 8500000m, "Студия", 1, 0, "Студия в новостройке с ремонтом", 17, null, 67 }
+                    { 1, 2, "Бишкек, микрорайон Восток-5, дом 15", 85.5, "+996 (555) 123-456", new DateTime(2025, 9, 26, 23, 42, 53, 446, DateTimeKind.Local).AddTicks(8850), "Просторная квартира с панорамными окнами, современным ремонтом и отличным видом на горы Ала-Тоо. Все коммуникации новые, встроенная кухня, просторные комнаты.", 23, 12, null, true, 42.874600000000001, "Бишкек, Восток-5", 74.569800000000001, null, null, "/models/apartment1.glb", "admin-user-id", 1312500000m, "Квартира", 3, 0, "Современная 3-комнатная квартира в Бишкеке", 25, null, 156 },
+                    { 2, 2, "Ош, район Сулайман-Тоо, ул. Ленина 123", 180.0, "+996 (700) 765-432", new DateTime(2025, 10, 1, 23, 42, 53, 446, DateTimeKind.Local).AddTicks(8873), "Двухэтажный дом в экологически чистом районе с видом на гору Сулайман-Тоо. Большой участок с садом, гараж на 2 машины, баня, беседка. Идеально для семьи с детьми.", 12, 1, null, true, 40.513800000000003, "Ош, Сулайман-Тоо", 72.7958, null, null, "/models/house1.glb", "admin-user-id", 2187500000m, "Дом", 5, 0, "Загородный дом в Оше с большим участком", 2, null, 89 },
+                    { 3, 1, "Джалал-Абад, мкр. Кызыл-Шарк, дом 45", 35.0, "+996 (770) 555-112", new DateTime(2025, 10, 4, 23, 42, 53, 446, DateTimeKind.Local).AddTicks(8890), "Уютная студия в новом жилом комплексе. Современная планировка, высокие потолки, французское остекление. Развитая инфраструктура района.", 8, 8, null, false, 40.935600000000001, "Джалал-Абад, Кызыл-Шарк", 73.008899999999997, null, null, null, "admin-user-id", 743750000m, "Студия", 1, 0, "Студия в Джалал-Абаде с ремонтом", 17, null, 67 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "PropertyImages",
+                columns: new[] { "Id", "ImageUrl", "IsPrimary", "Order", "PropertyId" },
+                values: new object[,]
+                {
+                    { 1, "/uploads/properties/apartment1.jpg", true, 0, 1 },
+                    { 2, "/uploads/properties/house1.jpg", true, 0, 2 },
+                    { 3, "/uploads/properties/cottage1.jpg", true, 0, 3 }
                 });
 
             migrationBuilder.CreateIndex(

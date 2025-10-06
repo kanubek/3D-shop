@@ -86,10 +86,10 @@ namespace RealEstate3D.Data
             var adminUser = new ApplicationUser
             {
                 Id = adminUserId,
-                UserName = "admin@realestate3d.com",
-                NormalizedUserName = "ADMIN@REALESTATE3D.COM",
-                Email = "admin@realestate3d.com",
-                NormalizedEmail = "ADMIN@REALESTATE3D.COM",
+                UserName = "admin@realestate3d.kg",
+                NormalizedUserName = "ADMIN@REALESTATE3D.KG",
+                Email = "admin@realestate3d.kg",
+                NormalizedEmail = "ADMIN@REALESTATE3D.KG",
                 EmailConfirmed = true,
                 FirstName = "Администратор",
                 LastName = "Системы",
@@ -103,16 +103,16 @@ namespace RealEstate3D.Data
             
             builder.Entity<ApplicationUser>().HasData(adminUser);
 
-            // Создаем тестовые объекты недвижимости
+            // Создаем тестовые объекты недвижимости для Кыргызстана
             builder.Entity<Property>().HasData(
                 new Property
                 {
                     Id = 1,
-                    Title = "Современная 3-комнатная квартира в центре",
-                    Description = "Просторная квартира с панорамными окнами, современным ремонтом и отличным видом на город. Все коммуникации новые, встроенная кухня, просторные комнаты.",
-                    Address = "г. Москва, ул. Тверская, 15, кв. 45",
-                    Location = "Москва, Центральный округ",
-                    Price = 15000000,
+                    Title = "Современная 3-комнатная квартира в Бишкеке",
+                    Description = "Просторная квартира с панорамными окнами, современным ремонтом и отличным видом на горы Ала-Тоо. Все коммуникации новые, встроенная кухня, просторные комнаты.",
+                    Address = "Бишкек, микрорайон Восток-5, дом 15",
+                    Location = "Бишкек, Восток-5",
+                    Price = 1312500000, // 15,000,000 RUB * 87.5 = 1,312,500,000 KGS
                     PropertyType = "Квартира",
                     Rooms = 3,
                     Area = 85.5,
@@ -121,23 +121,23 @@ namespace RealEstate3D.Data
                     Is3DGenerated = true,
                     AI3DStatus = AI3DStatus.Completed,
                     Model3DUrl = "/models/apartment1.glb",
-                    ContactInfo = "+7 (999) 123-45-67",
+                    ContactInfo = "+996 (555) 123-456",
                     Status = PropertyStatus.Active,
                     OwnerId = adminUserId,
                     ViewsCount = 156,
                     FavoritesCount = 23,
-                    Latitude = 55.7558,
-                    Longitude = 37.6176,
+                    Latitude = 42.8746, // Координаты Бишкека
+                    Longitude = 74.5698,
                     CreatedAt = DateTime.Now.AddDays(-10)
                 },
                 new Property
                 {
                     Id = 2,
-                    Title = "Загородный дом с участком 15 соток",
-                    Description = "Двухэтажный коттедж в экологически чистом районе. Большой участок с садом, гараж на 2 машины, баня, беседка. Идеально для семьи с детьми.",
-                    Address = "Московская область, г. Одинцово, ул. Садовая, 12",
-                    Location = "Московская область, Одинцово",
-                    Price = 25000000,
+                    Title = "Загородный дом в Оше с большим участком",
+                    Description = "Двухэтажный дом в экологически чистом районе с видом на гору Сулайман-Тоо. Большой участок с садом, гараж на 2 машины, баня, беседка. Идеально для семьи с детьми.",
+                    Address = "Ош, район Сулайман-Тоо, ул. Ленина 123",
+                    Location = "Ош, Сулайман-Тоо",
+                    Price = 2187500000, // 25,000,000 RUB * 87.5 = 2,187,500,000 KGS
                     PropertyType = "Дом",
                     Rooms = 5,
                     Area = 180.0,
@@ -146,23 +146,23 @@ namespace RealEstate3D.Data
                     Is3DGenerated = true,
                     AI3DStatus = AI3DStatus.Completed,
                     Model3DUrl = "/models/house1.glb",
-                    ContactInfo = "+7 (999) 765-43-21",
+                    ContactInfo = "+996 (700) 765-432",
                     Status = PropertyStatus.Active,
                     OwnerId = adminUserId,
                     ViewsCount = 89,
                     FavoritesCount = 12,
-                    Latitude = 55.6736,
-                    Longitude = 37.2907,
+                    Latitude = 40.5138, // Координаты Оша
+                    Longitude = 72.7958,
                     CreatedAt = DateTime.Now.AddDays(-5)
                 },
                 new Property
                 {
                     Id = 3,
-                    Title = "Студия в новостройке с ремонтом",
+                    Title = "Студия в Джалал-Абаде с ремонтом",
                     Description = "Уютная студия в новом жилом комплексе. Современная планировка, высокие потолки, французское остекление. Развитая инфраструктура района.",
-                    Address = "г. Санкт-Петербург, пр. Энгельса, 150",
-                    Location = "Санкт-Петербург, Приморский район",
-                    Price = 8500000,
+                    Address = "Джалал-Абад, мкр. Кызыл-Шарк, дом 45",
+                    Location = "Джалал-Абад, Кызыл-Шарк",
+                    Price = 743750000, // 8,500,000 RUB * 87.5 = 743,750,000 KGS
                     PropertyType = "Студия",
                     Rooms = 1,
                     Area = 35.0,
@@ -170,13 +170,13 @@ namespace RealEstate3D.Data
                     TotalFloors = 17,
                     Is3DGenerated = false,
                     AI3DStatus = AI3DStatus.Processing,
-                    ContactInfo = "+7 (812) 555-11-22",
+                    ContactInfo = "+996 (770) 555-112",
                     Status = PropertyStatus.Active,
                     OwnerId = adminUserId,
                     ViewsCount = 67,
                     FavoritesCount = 8,
-                    Latitude = 59.9311,
-                    Longitude = 30.3609,
+                    Latitude = 40.9356, // Координаты Джалал-Абада
+                    Longitude = 73.0089,
                     CreatedAt = DateTime.Now.AddDays(-2)
                 }
             );

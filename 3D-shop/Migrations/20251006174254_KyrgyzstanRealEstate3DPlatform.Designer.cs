@@ -11,8 +11,8 @@ using RealEstate3D.Data;
 namespace RealEstate3D.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251006101504_UpdateAdminUserPassword")]
-    partial class UpdateAdminUserPassword
+    [Migration("20251006174254_KyrgyzstanRealEstate3DPlatform")]
+    partial class KyrgyzstanRealEstate3DPlatform
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -239,23 +239,23 @@ namespace RealEstate3D.Migrations
                         {
                             Id = "admin-user-id",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1974d471-ed5c-481f-ae2e-f596305b57d1",
-                            CreatedAt = new DateTime(2025, 10, 6, 16, 15, 4, 278, DateTimeKind.Local).AddTicks(2266),
-                            Email = "admin@realestate3d.com",
+                            ConcurrencyStamp = "eeb6e965-dab9-4895-867c-eae15e5326bd",
+                            CreatedAt = new DateTime(2025, 10, 6, 23, 42, 53, 371, DateTimeKind.Local).AddTicks(4612),
+                            Email = "admin@realestate3d.kg",
                             EmailConfirmed = true,
                             FirstName = "Администратор",
                             IsActive = true,
-                            LastLoginAt = new DateTime(2025, 10, 6, 16, 15, 4, 278, DateTimeKind.Local).AddTicks(2270),
+                            LastLoginAt = new DateTime(2025, 10, 6, 23, 42, 53, 371, DateTimeKind.Local).AddTicks(4615),
                             LastName = "Системы",
                             LockoutEnabled = false,
-                            NormalizedEmail = "ADMIN@REALESTATE3D.COM",
-                            NormalizedUserName = "ADMIN@REALESTATE3D.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEChNb4kuye9kNg0G9jsG4JcV1ixwyAcJKr/X3jrYdfGOIQq8xrWhadr5Zbo1I8ufaw==",
+                            NormalizedEmail = "ADMIN@REALESTATE3D.KG",
+                            NormalizedUserName = "ADMIN@REALESTATE3D.KG",
+                            PasswordHash = "AQAAAAIAAYagAAAAED4wec7Lm0lDGBO/iCgusNA6jRGUDya7BDPLv4KsvMQcF+fK1tmz0+5hCNl70ENxIg==",
                             PhoneNumberConfirmed = false,
                             Role = 3,
-                            SecurityStamp = "c943fbd7-ef4d-4c3c-8c3f-10ad39c93f94",
+                            SecurityStamp = "e33e4f7b-2ce5-411f-be8c-817696ac36f6",
                             TwoFactorEnabled = false,
-                            UserName = "admin@realestate3d.com"
+                            UserName = "admin@realestate3d.kg"
                         });
                 });
 
@@ -320,11 +320,19 @@ namespace RealEstate3D.Migrations
                     b.Property<int>("Floor")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("Is3DGenerated")
                         .HasColumnType("INTEGER");
 
                     b.Property<double?>("Latitude")
                         .HasColumnType("REAL");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT");
 
                     b.Property<double?>("Longitude")
                         .HasColumnType("REAL");
@@ -391,23 +399,24 @@ namespace RealEstate3D.Migrations
                         {
                             Id = 1,
                             AI3DStatus = 2,
-                            Address = "г. Москва, ул. Тверская, 15, кв. 45",
+                            Address = "Бишкек, микрорайон Восток-5, дом 15",
                             Area = 85.5,
-                            ContactInfo = "+7 (999) 123-45-67",
-                            CreatedAt = new DateTime(2025, 9, 26, 16, 15, 4, 353, DateTimeKind.Local).AddTicks(3678),
-                            Description = "Просторная квартира с панорамными окнами, современным ремонтом и отличным видом на город. Все коммуникации новые, встроенная кухня, просторные комнаты.",
+                            ContactInfo = "+996 (555) 123-456",
+                            CreatedAt = new DateTime(2025, 9, 26, 23, 42, 53, 446, DateTimeKind.Local).AddTicks(8850),
+                            Description = "Просторная квартира с панорамными окнами, современным ремонтом и отличным видом на горы Ала-Тоо. Все коммуникации новые, встроенная кухня, просторные комнаты.",
                             FavoritesCount = 23,
                             Floor = 12,
                             Is3DGenerated = true,
-                            Latitude = 55.755800000000001,
-                            Longitude = 37.617600000000003,
+                            Latitude = 42.874600000000001,
+                            Location = "Бишкек, Восток-5",
+                            Longitude = 74.569800000000001,
                             Model3DUrl = "/models/apartment1.glb",
                             OwnerId = "admin-user-id",
-                            Price = 15000000m,
+                            Price = 1312500000m,
                             PropertyType = "Квартира",
                             Rooms = 3,
                             Status = 0,
-                            Title = "Современная 3-комнатная квартира в центре",
+                            Title = "Современная 3-комнатная квартира в Бишкеке",
                             TotalFloors = 25,
                             ViewsCount = 156
                         },
@@ -415,23 +424,24 @@ namespace RealEstate3D.Migrations
                         {
                             Id = 2,
                             AI3DStatus = 2,
-                            Address = "Московская область, г. Одинцово, ул. Садовая, 12",
+                            Address = "Ош, район Сулайман-Тоо, ул. Ленина 123",
                             Area = 180.0,
-                            ContactInfo = "+7 (999) 765-43-21",
-                            CreatedAt = new DateTime(2025, 10, 1, 16, 15, 4, 353, DateTimeKind.Local).AddTicks(3696),
-                            Description = "Двухэтажный коттедж в экологически чистом районе. Большой участок с садом, гараж на 2 машины, баня, беседка. Идеально для семьи с детьми.",
+                            ContactInfo = "+996 (700) 765-432",
+                            CreatedAt = new DateTime(2025, 10, 1, 23, 42, 53, 446, DateTimeKind.Local).AddTicks(8873),
+                            Description = "Двухэтажный дом в экологически чистом районе с видом на гору Сулайман-Тоо. Большой участок с садом, гараж на 2 машины, баня, беседка. Идеально для семьи с детьми.",
                             FavoritesCount = 12,
                             Floor = 1,
                             Is3DGenerated = true,
-                            Latitude = 55.6736,
-                            Longitude = 37.290700000000001,
+                            Latitude = 40.513800000000003,
+                            Location = "Ош, Сулайман-Тоо",
+                            Longitude = 72.7958,
                             Model3DUrl = "/models/house1.glb",
                             OwnerId = "admin-user-id",
-                            Price = 25000000m,
+                            Price = 2187500000m,
                             PropertyType = "Дом",
                             Rooms = 5,
                             Status = 0,
-                            Title = "Загородный дом с участком 15 соток",
+                            Title = "Загородный дом в Оше с большим участком",
                             TotalFloors = 2,
                             ViewsCount = 89
                         },
@@ -439,22 +449,23 @@ namespace RealEstate3D.Migrations
                         {
                             Id = 3,
                             AI3DStatus = 1,
-                            Address = "г. Санкт-Петербург, пр. Энгельса, 150",
+                            Address = "Джалал-Абад, мкр. Кызыл-Шарк, дом 45",
                             Area = 35.0,
-                            ContactInfo = "+7 (812) 555-11-22",
-                            CreatedAt = new DateTime(2025, 10, 4, 16, 15, 4, 353, DateTimeKind.Local).AddTicks(3704),
+                            ContactInfo = "+996 (770) 555-112",
+                            CreatedAt = new DateTime(2025, 10, 4, 23, 42, 53, 446, DateTimeKind.Local).AddTicks(8890),
                             Description = "Уютная студия в новом жилом комплексе. Современная планировка, высокие потолки, французское остекление. Развитая инфраструктура района.",
                             FavoritesCount = 8,
                             Floor = 8,
                             Is3DGenerated = false,
-                            Latitude = 59.931100000000001,
-                            Longitude = 30.360900000000001,
+                            Latitude = 40.935600000000001,
+                            Location = "Джалал-Абад, Кызыл-Шарк",
+                            Longitude = 73.008899999999997,
                             OwnerId = "admin-user-id",
-                            Price = 8500000m,
+                            Price = 743750000m,
                             PropertyType = "Студия",
                             Rooms = 1,
                             Status = 0,
-                            Title = "Студия в новостройке с ремонтом",
+                            Title = "Студия в Джалал-Абаде с ремонтом",
                             TotalFloors = 17,
                             ViewsCount = 67
                         });
